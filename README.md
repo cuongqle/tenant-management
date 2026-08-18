@@ -2,9 +2,14 @@
 
 App for managing organizations, users, projects, and environments.
 
+## Live demo
+
+> **LIVE DEMO** — [https://tenant-management-omega.vercel.app/](https://tenant-management-omega.vercel.app/)
+>
+> Seed login: `admin@example.com` / `Admin123!`
+
 - **Frontend:** http://localhost:3000
 - **API docs:** http://localhost:8000/docs
-- **Seed login:** `admin@example.com` / `Admin123!`
 
 ## Run with Docker
 
