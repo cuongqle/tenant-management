@@ -8,6 +8,8 @@ App for managing organizations, users, projects, and environments.
 >
 > Seed login: `admin@example.com` / `Admin123!`
 
+## Local
+
 - **Frontend:** http://localhost:3000
 - **API docs:** http://localhost:8000/docs
 
