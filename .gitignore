@@ -1,0 +1,25 @@
+.DS_Store
+.ruff_cache/
+.pytest_cache/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[oc]
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node / Next
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*

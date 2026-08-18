@@ -1,0 +1,55 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "cuong.le", email = "lequoccuong@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.19.1",
+    "bcrypt>=5.0.0",
+    "fastapi>=0.141.1",
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.4",
+    "pydantic-settings>=2.15.0",
+    "pydantic[email]>=2.13.4",
+    "pyjwt>=2.13.0",
+    "sqlalchemy>=2.0.52",
+    "uvicorn>=0.52.3",
+]
+
+[project.scripts]
+backend = "app.main:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "app"
+module-root = ""
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.14"
+
+[tool.ruff]
+src = ["."]
+
+[tool.ruff.lint]
+ignore = ["I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
