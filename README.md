@@ -6,6 +6,8 @@ App for managing organizations, users, projects, and environments.
 
 > **LIVE DEMO** — [https://tenant-management-omega.vercel.app/](https://tenant-management-omega.vercel.app/)
 >
+> Deployed on **Vercel** (frontend), **Render** (API), and **Neon** (Postgres).
+>
 > Seed login: `admin@example.com` / `Admin123!`
 
 ## Local
