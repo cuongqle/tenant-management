@@ -17,6 +17,9 @@ import type {
   OrganizationMember,
   OrganizationMemberAssign,
   OrganizationMemberUpdate,
+  Invitation,
+  InvitationCreate,
+  InvitationPreview,
 } from "@/types";
 
 export const organizationsApi = {
@@ -42,6 +45,17 @@ export const organizationsApi = {
       method: "POST",
       body,
     }),
+  invitations: (id: string) =>
+    api<Invitation[]>(`/api/v1/organizations/${id}/invitations`),
+  invite: (id: string, body: InvitationCreate) =>
+    api<Invitation>(`/api/v1/organizations/${id}/invitations`, {
+      method: "POST",
+      body,
+    }),
+  cancelInvitation: (organizationId: string, invitationId: string) =>
+    api<void>(`/api/v1/organizations/${organizationId}/invitations/${invitationId}`, {
+      method: "DELETE",
+    }),
 };
 
 export const organizationMembersApi = {
@@ -52,6 +66,15 @@ export const organizationMembersApi = {
     }),
   remove: (id: string) =>
     api<void>(`/api/v1/organization-members/${id}`, { method: "DELETE" }),
+};
+
+export const invitationsApi = {
+  preview: (token: string) =>
+    api<InvitationPreview>(`/api/v1/invitations/${token}`, { auth: false }),
+  accept: (token: string) =>
+    api<OrganizationMember>(`/api/v1/invitations/${token}/accept`, {
+      method: "POST",
+    }),
 };
 
 export const projectsApi = {

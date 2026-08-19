@@ -34,6 +34,7 @@ def test_login_success_returns_jwt() -> None:
     )
     assert payload["sub"] == str(user.id)
     assert payload["email"] == "admin@example.com"
+    assert payload["is_superuser"] is False
 
 
 def test_login_rejects_invalid_credentials() -> None:
@@ -94,6 +95,7 @@ def test_register_success_creates_user_and_returns_jwt() -> None:
     assert created_data["email"] == "new@example.com"
     assert created_data["name"] == "New User"
     assert created_data["password"] != "Secret123!"
+    assert created_data["is_superuser"] is False
     payload = jwt.decode(
         result.access_token,
         settings.jwt_secret_key,

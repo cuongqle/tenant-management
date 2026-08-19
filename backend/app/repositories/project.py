@@ -20,6 +20,18 @@ class Repository(BaseRepository[Project]):
         )
         return list(self.db.scalars(statement).all())
 
+    def list_by_organization_ids(
+        self, organization_ids: list[uuid.UUID]
+    ) -> list[Project]:
+        if not organization_ids:
+            return []
+        statement = (
+            select(Project)
+            .where(Project.organization_id.in_(organization_ids))
+            .order_by(Project.name)
+        )
+        return list(self.db.scalars(statement).all())
+
 
 ProjectRepository = Annotated[
     Repository,

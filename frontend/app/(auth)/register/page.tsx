@@ -1,20 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { register } from "@/hooks/use-auth";
+import { safeNextPath } from "@/lib/auth";
 import { emptyToNull } from "@/lib/utils";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = safeNextPath(searchParams.get("next"));
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,13 +32,18 @@ export default function RegisterPage() {
         name: emptyToNull(name),
         password,
       });
-      router.push("/dashboard");
+      router.push(nextPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to register");
     } finally {
       setLoading(false);
     }
   }
+
+  const loginHref =
+    searchParams.get("next") || searchParams.get("email")
+      ? `/login?email=${encodeURIComponent(email)}&next=${encodeURIComponent(nextPath)}`
+      : "/login";
 
   return (
     <Card className="border-white/10 bg-white/95 p-8 shadow-2xl shadow-indigo-950/40 backdrop-blur">
@@ -88,10 +96,18 @@ export default function RegisterPage() {
       </form>
       <p className="mt-4 text-sm text-slate-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-indigo-600">
+        <Link href={loginHref} className="font-medium text-indigo-600">
           Sign in
         </Link>
       </p>
     </Card>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

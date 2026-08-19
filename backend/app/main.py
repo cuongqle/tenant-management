@@ -6,6 +6,7 @@ from app.api import (
     auth,
     environments,
     health,
+    invitations,
     organization_members,
     organizations,
     projects,
@@ -36,6 +37,7 @@ app.add_middleware(
 
 app.include_router(health.router, tags=["health"])
 app.include_router(auth.router, prefix=API_V1_PREFIX)
+app.include_router(invitations.router, prefix=API_V1_PREFIX)
 app.include_router(organizations.router, prefix=API_V1_PREFIX, dependencies=protected)
 app.include_router(users.router, prefix=API_V1_PREFIX, dependencies=protected)
 app.include_router(projects.router, prefix=API_V1_PREFIX, dependencies=protected)

@@ -18,3 +18,38 @@ export function clearAccessToken(): void {
 export function isAuthenticated(): boolean {
   return Boolean(getAccessToken());
 }
+
+export function readAccessTokenClaims(): {
+  sub?: string;
+  email?: string;
+  is_superuser?: boolean;
+} | null {
+  const token = getAccessToken();
+  if (!token) {
+    return null;
+  }
+  const segment = token.split(".")[1];
+  if (!segment) {
+    return null;
+  }
+  try {
+    const padded = segment.replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(
+      padded.padEnd(padded.length + ((4 - (padded.length % 4)) % 4), "="),
+    );
+    return JSON.parse(json) as {
+      sub?: string;
+      email?: string;
+      is_superuser?: boolean;
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function safeNextPath(value: string | null): string {
+  if (value && value.startsWith("/") && !value.startsWith("//")) {
+    return value;
+  }
+  return "/dashboard";
+}

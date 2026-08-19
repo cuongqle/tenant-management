@@ -7,6 +7,7 @@ type PageHeaderProps = {
   description: string;
   actionLabel?: string;
   onAction?: () => void;
+  actions?: ReactNode;
 };
 
 export function PageHeader({
@@ -14,6 +15,7 @@ export function PageHeader({
   description,
   actionLabel,
   onAction,
+  actions,
 }: PageHeaderProps) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -21,7 +23,9 @@ export function PageHeader({
         <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
       </div>
-      {actionLabel && onAction ? (
+      {actions ? (
+        <div className="flex flex-wrap gap-2">{actions}</div>
+      ) : actionLabel && onAction ? (
         <Button size="lg" onClick={onAction}>
           {actionLabel}
         </Button>

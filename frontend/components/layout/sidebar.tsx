@@ -1,8 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { NavLinks } from "@/components/navigation/nav-links";
+import { readAccessTokenClaims } from "@/lib/auth";
 
 export function Sidebar() {
+  const [email, setEmail] = useState("Signed in");
+  const [isSuperuser, setIsSuperuser] = useState(false);
+
+  useEffect(() => {
+    const claims = readAccessTokenClaims();
+    setEmail(claims?.email ?? "Signed in");
+    setIsSuperuser(Boolean(claims?.is_superuser));
+  }, []);
+
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-white/10 bg-slate-950 p-5 text-white">
       <Link href="/dashboard" className="mb-8 flex items-center gap-3 px-2">
@@ -19,8 +32,10 @@ export function Sidebar() {
       </p>
       <NavLinks />
       <div className="mt-auto rounded-xl border border-white/10 bg-white/5 p-3">
-        <p className="text-xs font-medium text-slate-200">Signed in</p>
-        <p className="mt-1 truncate text-xs text-slate-400">admin@example.com</p>
+        <p className="text-xs font-medium text-slate-200">
+          {isSuperuser ? "Super admin" : "Signed in"}
+        </p>
+        <p className="mt-1 truncate text-xs text-slate-400">{email}</p>
       </div>
     </aside>
   );

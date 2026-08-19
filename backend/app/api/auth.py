@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException, status
 
+from app.api.deps import CurrentUser, _unauthorized
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
 from app.repositories.user import UserRepository
-from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
+from app.schemas.auth import LoginRequest, MeResponse, RegisterRequest, TokenResponse
 
 router = APIRouter(
     prefix="/auth",
@@ -14,7 +15,10 @@ router = APIRouter(
 def _token_for(user: User) -> TokenResponse:
     access_token = create_access_token(
         subject=str(user.id),
-        extra_claims={"email": user.email},
+        extra_claims={
+            "email": user.email,
+            "is_superuser": bool(getattr(user, "is_superuser", False)),
+        },
     )
     return TokenResponse(access_token=access_token)
 
@@ -47,6 +51,20 @@ def register(payload: RegisterRequest, users: UserRepository) -> TokenResponse:
             "email": str(payload.email),
             "name": payload.name,
             "password": hash_password(payload.password),
+            "is_superuser": False,
         }
     )
     return _token_for(user)
+
+
+@router.get("/me", response_model=MeResponse)
+def read_me(principal: CurrentUser, users: UserRepository) -> MeResponse:
+    user = users.get_by_id(principal.id)
+    if user is None:
+        raise _unauthorized()
+    return MeResponse(
+        id=user.id,
+        email=user.email,
+        name=user.name,
+        is_superuser=user.is_superuser,
+    )

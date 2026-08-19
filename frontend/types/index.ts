@@ -131,3 +131,38 @@ export type OrganizationMemberUpdate = {
 };
 
 export const MEMBER_ROLES = ["admin", "member"] as const;
+
+export type Me = {
+  id: string;
+  email: string;
+  name: string | null;
+  is_superuser: boolean;
+};
+
+export type Invitation = {
+  id: string;
+  organization_id: string;
+  email: string;
+  role: string;
+  token: string;
+  expires_at: string;
+  accepted_at: string | null;
+  invited_by_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InvitationCreate = {
+  email: string;
+  role?: string;
+};
+
+export type InvitationPreview = {
+  organization_id: string;
+  organization_name: string;
+  email: string;
+  role: string;
+  expires_at: string;
+  accepted: boolean;
+  expired: boolean;
+};

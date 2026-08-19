@@ -14,10 +14,18 @@ class Repository(BaseRepository[User]):
     order_by_column = User.email
 
     def list_by_organization_id(self, organization_id: uuid.UUID) -> list[User]:
+        return self.list_by_organization_ids([organization_id])
+
+    def list_by_organization_ids(
+        self, organization_ids: list[uuid.UUID]
+    ) -> list[User]:
+        if not organization_ids:
+            return []
         statement = (
             select(User)
             .join(OrganizationMember, OrganizationMember.user_id == User.id)
-            .where(OrganizationMember.organization_id == organization_id)
+            .where(OrganizationMember.organization_id.in_(organization_ids))
+            .distinct()
             .order_by(User.email)
         )
         return list(self.db.scalars(statement).all())

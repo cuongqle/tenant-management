@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { EmptyState, PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { useAsyncList } from "@/hooks/use-async-list";
+import { readAccessTokenClaims } from "@/lib/auth";
 import { usersApi } from "@/lib/resources";
 import { emptyToNull, formatDate } from "@/lib/utils";
 import type { User, UserCreate, UserUpdate } from "@/types";
@@ -26,7 +27,15 @@ const emptyForm = {
 };
 
 export function UserManager() {
+  const [isSuperuser, setIsSuperuser] = useState(false);
+  const [selfId, setSelfId] = useState<string | undefined>();
   const { items, loading, error, reload } = useAsyncList(usersApi.list);
+
+  useEffect(() => {
+    const claims = readAccessTokenClaims();
+    setIsSuperuser(Boolean(claims?.is_superuser));
+    setSelfId(claims?.sub);
+  }, []);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -94,9 +103,13 @@ export function UserManager() {
     <>
       <PageHeader
         title="Users"
-        description="Create accounts and reset access for workspace users."
-        actionLabel="New user"
-        onAction={openCreate}
+        description={
+          isSuperuser
+            ? "All accounts. Create users here, or invite them into an organization."
+            : "People who share an organization with you. Invite others from an organization page."
+        }
+        actionLabel={isSuperuser ? "New user" : undefined}
+        onAction={isSuperuser ? openCreate : undefined}
       />
       <Card className="gap-0 py-0">
         {error ? (
@@ -105,7 +118,11 @@ export function UserManager() {
         {loading ? (
           <EmptyState>Loading users...</EmptyState>
         ) : items.length === 0 ? (
-          <EmptyState>No users yet. Create the first one.</EmptyState>
+          <EmptyState>
+            {isSuperuser
+              ? "No users yet. Create the first one."
+              : "No users in your organizations yet."}
+          </EmptyState>
         ) : (
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
@@ -125,20 +142,24 @@ export function UserManager() {
                     {formatDate(user.created_at)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(user)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => void onDelete(user)}
-                    >
-                      Delete
-                    </Button>
+                    {isSuperuser || user.id === selfId ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEdit(user)}
+                      >
+                        Edit
+                      </Button>
+                    ) : null}
+                    {isSuperuser ? (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => void onDelete(user)}
+                      >
+                        Delete
+                      </Button>
+                    ) : null}
                   </td>
                 </tr>
               ))}

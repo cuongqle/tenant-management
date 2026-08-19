@@ -8,12 +8,34 @@ App for managing organizations, users, projects, and environments.
 >
 > Deployed on **Vercel** (frontend), **Render** (API), and **Neon** (Postgres).
 >
-> Seed login: `admin@example.com` / `Admin123!`
+> Seed login: `admin@example.com` / `Admin123!` (platform super admin)
 
 ## Local
 
 - **Frontend:** http://localhost:3000
 - **API docs:** http://localhost:8000/docs
+
+## Roles
+
+A **super admin** is a platform operator (`is_superuser`), not the same as an organization `admin`. Super admins can do more than a normal org admin or member.
+
+**Super admin**
+- See every organization, project, environment, and user (no membership required)
+- Create an organization without joining it, then invite people in
+- Open, edit, and delete any tenant and its projects or environments
+- Create and delete user accounts across the platform
+- Update any user
+- Invite users (by email) or add existing users to any organization
+
+**Organization admin / member**
+- See only organizations they belong to, and only users who share one of those orgs
+- Creating an organization adds them as that org’s admin
+- Invite people into their own organizations
+- Update their own account only (cannot create or delete platform users)
+
+An invited person must **register** (or already have an account) with the **same email** as the invite, then open the invite link and accept. There is no access until they accept.
+
+Seed login `admin@example.com` / `Admin123!` is a super admin.
 
 ## Run with Docker
 

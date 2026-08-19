@@ -94,7 +94,7 @@ export function OrganizationManager() {
     <>
       <PageHeader
         title="Organizations"
-        description="Create and manage tenant organizations."
+        description="Create tenant organizations. Super admins can create an empty org, then invite people."
         actionLabel="New organization"
         onAction={openCreate}
       />

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ._base_ import Base, TimestampMixin, UUIDPrimaryKey
@@ -17,6 +17,12 @@ class User(Base, UUIDPrimaryKey, TimestampMixin):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_superuser: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="false",
+    )
 
     organizations: Mapped[list[OrganizationMember]] = relationship(
         back_populates="user",

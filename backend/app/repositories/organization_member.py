@@ -37,6 +37,37 @@ class Repository(BaseRepository[OrganizationMember]):
         )
         return self.db.scalars(statement).first()
 
+    def list_organization_ids_for_user(self, user_id: uuid.UUID) -> list[uuid.UUID]:
+        statement = select(OrganizationMember.organization_id).where(
+            OrganizationMember.user_id == user_id
+        )
+        return list(self.db.scalars(statement).all())
+
+    def list_by_organization_ids(
+        self, organization_ids: list[uuid.UUID]
+    ) -> list[OrganizationMember]:
+        if not organization_ids:
+            return []
+        statement = (
+            select(OrganizationMember)
+            .where(OrganizationMember.organization_id.in_(organization_ids))
+            .order_by(OrganizationMember.role)
+        )
+        return list(self.db.scalars(statement).all())
+
+    def user_belongs_to_any(
+        self,
+        user_id: uuid.UUID,
+        organization_ids: list[uuid.UUID],
+    ) -> bool:
+        if not organization_ids:
+            return False
+        statement = select(OrganizationMember.id).where(
+            OrganizationMember.user_id == user_id,
+            OrganizationMember.organization_id.in_(organization_ids),
+        )
+        return self.db.scalars(statement).first() is not None
+
 
 OrganizationMemberRepository = Annotated[
     Repository,

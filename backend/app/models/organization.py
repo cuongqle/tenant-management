@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ._base_ import Base, TimestampMixin, UUIDPrimaryKey
 
 if TYPE_CHECKING:
+    from .invitation import Invitation
     from .organization_member import OrganizationMember
     from .project import Project
 
@@ -32,6 +33,10 @@ class Organization(Base, UUIDPrimaryKey, TimestampMixin):
         cascade="all, delete-orphan",
     )
     projects: Mapped[list[Project]] = relationship(
+        back_populates="organization",
+        cascade="all, delete-orphan",
+    )
+    invitations: Mapped[list[Invitation]] = relationship(
         back_populates="organization",
         cascade="all, delete-orphan",
     )

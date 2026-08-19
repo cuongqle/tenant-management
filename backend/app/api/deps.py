@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 from typing import Annotated, Any, TypeVar
 
 import jwt
@@ -11,6 +12,14 @@ from app.repositories._base_ import BaseRepository
 TModel = TypeVar("TModel")
 
 http_bearer = HTTPBearer(auto_error=False)
+
+
+@dataclass(frozen=True)
+class CurrentPrincipal:
+    id: uuid.UUID
+    email: str
+    is_superuser: bool
+
 
 def _unauthorized() -> HTTPException:
     return HTTPException(
@@ -45,3 +54,16 @@ def get_current_user(
         raise _unauthorized() from None
 
     return payload
+
+
+def get_current_principal(
+    payload: Annotated[dict[str, Any], Depends(get_current_user)],
+) -> CurrentPrincipal:
+    return CurrentPrincipal(
+        id=uuid.UUID(str(payload["sub"])),
+        email=str(payload.get("email") or ""),
+        is_superuser=bool(payload.get("is_superuser")),
+    )
+
+
+CurrentUser = Annotated[CurrentPrincipal, Depends(get_current_principal)]
